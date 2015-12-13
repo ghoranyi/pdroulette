@@ -16,7 +16,9 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from views import get_PD_users
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^pd/users', get_PD_users),
 ]
