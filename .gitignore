@@ -62,3 +62,9 @@ target/
 
 # VirtualEnv
 virtualenv
+
+# App secrets
+secrets.json
+
+# Django local DB
+db.sqlite3
