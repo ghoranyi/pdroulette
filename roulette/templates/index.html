@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PD Roulette</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://css-spinners.com/css/spinner/throbber.css" type="text/css">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="jumbotron">
+        <h1>PagerDuty Roulette</h1>
+        <p>Add players and hit 'Play!' whenever you are ready!</p>
+        <p><a class="btn btn-success btn-lg" href="#" role="button" id="play">Play!</a></p>
+    </div>
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h4>Players</h4>
+        </div>
+        <div class="panel-body">
+            <ul class="list-group" id="players" />
+        </div>
+    </div>
+    <div class="alert alert-warning" role="alert">
+        <button type="button" class="btn btn-primary" id="more-players">Add more players</button>
+        <div style="margin-top: 15px; display: none" id="more-players-dropdown">
+            <div class="throbber-loader" id="player-loader">
+                Loading…
+            </div>
+            <select class="form-control" id="add-player" style="display: none;"/>
+        </div>
+    </div>
+    <script>
+        $('#more-players').on('click', function(e) {
+            e.preventDefault(); // preventing default click action
+            $('#more-players-dropdown').show(250)
+            var select = $('#add-player')
+            $.getJSON("pd/users/", function( data ) {
+                $.each( data.users, function( idx, user ) {
+                    select.append($("<option></option>")
+                            .attr("value", user.id + "#" + user.name)
+                            .text(user.name));
+                });
+                $('#player-loader').hide(250)
+                select.show(250)
+            });
+        })
+        $('#add-player').change(function (){
+            var id = this.value.split("#")[0]
+            var name = this.value.split("#")[1]
+            $("#players").append('<li class="list-group-item" data-id="' + id + '">' + name + '</li>');
+        })
+        $('#play').on('click', function(e) {
+            var players = []
+            $("#players").find('li').each(function() {
+                var current = $(this)
+                players.push(current.data('id'))
+            })
+            $.ajax({
+                type: "POST",
+                url: "/play",
+                async: true,
+                data: {players: players},
+                dataType: "json",
+                success: function(response) {
+                    console.log(response)
+                }
+            });
+        })
+    </script>
+</div>
+
+</body>
+</html>
